@@ -42,7 +42,7 @@ jobs:
       run : |
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
-        git add ceoban/ceoban*.json
+        git add ceoban/ceoban_*.json
         
         git commit -m "차트 수집 완료"
     - name: Push
