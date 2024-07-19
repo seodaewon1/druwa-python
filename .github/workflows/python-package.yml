@@ -34,6 +34,13 @@ jobs:
         pip install pandas
         pip install selenium
         pip install webdriver_manager
+        
+    - name: Install Google Chrome
+      run: |
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        sudo apt-get -f install
+        
     - name: Run Python scripts
       run: |
         python3 ceoban.py
