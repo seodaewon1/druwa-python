@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from selenium.webdriver import ActionChains
 import time
-import json
 import pandas as pd
 
 # 현재 날짜 가져오기
@@ -64,6 +63,7 @@ def crawling_main():
 
     for e in elem:
         e.click()
+        time.sleep(2)  # 페이지 로드 시간을 기다림
         entry_iframe()
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -87,7 +87,7 @@ def save_to_json():
 page_num = 1
 
 while True:
-    time.sleep(1.5)
+    time.sleep(2)  # 페이지 로딩 대기 시간
     search_iframe()
     elem, name_list = chk_names()
 
@@ -100,7 +100,7 @@ while True:
 
     while True:
         action.move_to_element(elem[-1]).perform()
-        time.sleep(1)
+        time.sleep(2)  # 이동 후 잠시 대기
         elem, name_list = chk_names()
 
         if not name_list or last_name == name_list[-1]:
