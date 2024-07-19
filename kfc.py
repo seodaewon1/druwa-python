@@ -15,6 +15,7 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
 
 # run webdriver
+options = ChromeOptions() 
 driver = webdriver.Chrome()
 options.add_argument("--headless")
 keyword = 'KFC DT점'
