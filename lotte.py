@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -10,7 +9,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from selenium.webdriver import ActionChains
 import time
-import json
 import pandas as pd
 
 # 현재 날짜 가져오기
@@ -41,14 +39,14 @@ last_name = ''
 def search_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
+        WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
     except Exception as e:
         print(f"Error switching to iframe: {e}")
 
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
+        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
         driver.switch_to.frame(driver.find_element(By.XPATH, '//*[@id="entryIframe"]'))
     except Exception as e:
         print(f"Error switching to entry iframe: {e}")
@@ -65,6 +63,7 @@ def crawling_main():
 
     for e in elem:
         e.click()
+        time.sleep(2)  # 페이지 로드 시간을 기다림
         entry_iframe()
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -101,7 +100,7 @@ while True:
 
     while True:
         action.move_to_element(elem[-1]).perform()
-        time.sleep(1)
+        time.sleep(2)  # 이동 후 잠시 대기
         elem, name_list = chk_names()
 
         if not name_list or last_name == name_list[-1]:
@@ -113,12 +112,12 @@ while True:
 
     # next page
     try:
-        next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
+        next_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
             next_button.click()
             print(f"{page_num} 페이지 완료")
             page_num += 1
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
         else:
             print("마지막 페이지에 도달했습니다.")
             break
