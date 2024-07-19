@@ -8,8 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from datetime import datetime
+from selenium.webdriver import ActionChains
 import time
 import json
+import pandas as pd
 
 
 # 현재 날짜 가져오기
