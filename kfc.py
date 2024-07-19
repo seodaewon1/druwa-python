@@ -19,9 +19,11 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
 
 # run webdriver
-options = ChromeOptions()
+chrome_options = ChromeOptions()
+chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
+chrome_options.add_argument("--no-sandbox")  # 샌드박스 사용 안 함
+chrome_options.add_argument("--disable-dev-shm-usage") 
 driver = webdriver.Chrome()
-options.add_argument("--headless")
 service = ChromeService(executable_path=ChromeDriverManager().install())
 browser = webdriver.Chrome(service=service, options=options)
 keyword = 'KFC DT점'
