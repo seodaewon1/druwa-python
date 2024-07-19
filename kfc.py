@@ -20,6 +20,7 @@ filename = f"kfc/kfc_{current_date}.json"
 
 # run webdriver
 options = ChromeOptions()
+driver = webdriver.Chrome()
 options.add_argument("--headless")
 service = ChromeService(executable_path=ChromeDriverManager().install())
 browser = webdriver.Chrome(service=service, options=options)
