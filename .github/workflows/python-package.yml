@@ -46,13 +46,14 @@ jobs:
         python3 ceoban.py
         python3 kfc.py
         python3 mac.py
+        python3 lotte.py
         
     - name: Commits
       run : |
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
         git add ceoban/ceoban_*.json
-        git add kfc/kfc_*.json
+        git add lotte/lotte_*.json
         git add macdonald/macdonald_*.json
         
         git commit -m "차트 수집 완료"
