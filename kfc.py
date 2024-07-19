@@ -1,4 +1,3 @@
-# import package
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -13,19 +12,24 @@ import time
 import json 
 import pandas as pd
 
-
 # 현재 날짜 가져오기
 current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
 
-# run webdriver
+# ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
 chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
 chrome_options.add_argument("--no-sandbox")  # 샌드박스 사용 안 함
-chrome_options.add_argument("--disable-dev-shm-usage") 
-driver = webdriver.Chrome()
+chrome_options.add_argument("--disable-dev-shm-usage")  # 공유 메모리 사용 안 함
+chrome_options.add_argument("--disable-gpu")  # GPU 사용 안 함
+chrome_options.add_argument("--remote-debugging-port=9222")  # 원격 디버깅 포트 설정
+
+# ChromeDriver 경로 설정
 service = ChromeService(executable_path=ChromeDriverManager().install())
-browser = webdriver.Chrome(service=service, options=options)
+
+# WebDriver 객체 생성
+driver = webdriver.Chrome(service=service, options=chrome_options)
+
 keyword = 'KFC DT점'
 url = f'https://map.naver.com/p/search/{keyword}'
 driver.get(url)
@@ -41,10 +45,8 @@ def search_iframe():
 def entry_iframe():
     driver.switch_to.default_content()
     WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
-
     for i in range(5):
         time.sleep(.5)
-
         try:
             driver.switch_to.frame(driver.find_element(By.XPATH, '//*[@id="entryIframe"]'))
             break
@@ -55,26 +57,20 @@ def chk_names():
     search_iframe()
     elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
     name_list = [e.text for e in elem]
-
     return elem, name_list
 
 def crawling_main():
     global naver_res
     addr_list = []
-
     for e in elem:
         e.click()
         entry_iframe()
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-        # append data
         try:
             addr_list.append(soup.select('span.LDgIH')[0].text)
         except:
             addr_list.append(float('nan'))
-
         search_iframe()
-
     naver_temp = pd.DataFrame({
        'title': name_list,
         'address': addr_list
@@ -82,7 +78,6 @@ def crawling_main():
     naver_res = pd.concat([naver_res, naver_temp])
 
 def save_to_json():
-    # 데이터를 JSON 파일로 저장
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
 
 page_num = 1
@@ -100,11 +95,9 @@ while True:
         break
 
     while True:
-        # auto scroll
         action.move_to_element(elem[-1]).perform()
-        time.sleep(1)  # 페이지 로드 시간을 조금 더 기다림
+        time.sleep(1)
         elem, name_list = chk_names()
-
         if not name_list or last_name == name_list[-1]:
             break
         else:
@@ -112,9 +105,8 @@ while True:
 
     crawling_main()
 
-    # next page
     next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
-            
+    
     if next_button:
         next_button.click()
         print(f"{page_num} 페이지 완료")
@@ -124,10 +116,6 @@ while True:
         print("마지막 페이지에 도달했습니다.")
         break
 
-# JSON 파일로 저장
 save_to_json()
 
-# 브라우저 종료
 driver.quit()
-
-
