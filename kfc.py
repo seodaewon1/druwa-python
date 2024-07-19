@@ -17,9 +17,10 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
 
 # run webdriver
-options = ChromeOptions() 
-driver = webdriver.Chrome()
+options = ChromeOptions()
 options.add_argument("--headless")
+service = ChromeService(executable_path=ChromeDriverManager().install())
+browser = webdriver.Chrome(service=service, options=options)
 keyword = 'KFC DT점'
 url = f'https://map.naver.com/p/search/{keyword}'
 driver.get(url)
