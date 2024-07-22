@@ -43,10 +43,10 @@ jobs:
         
     - name: Run Python scripts
       run: |
-        python3 ceoban.py
-        python3 kfc.py
-        python3 mac.py
-        python3 lotte.py
+         python3 ceoban.py || { echo "ceoban.py failed"; exit 1; }
+         python3 kfc.py || { echo "kfc.py failed"; exit 1; }
+         python3 mac.py || { echo "mac.py failed"; exit 1; }
+         python3 lotte.py || { echo "lotte.py failed"; exit 1; }
         
     - name: Commits
       run : |
