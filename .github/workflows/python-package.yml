@@ -40,23 +40,17 @@ jobs:
         python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
         python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
         
-    - name: Pull changes
+    - name: Handle local changes
       run: |
+        if [[ -n "$(git status --porcelain)" ]]; then
+          git config --global user.email "sdw10195@gmail.com"
+          git config --global user.name "seodaewon1"
+          git add .
+          git commit -m "Saving local changes" || echo "No changes to commit"
+        fi
         git pull origin main
-        
-    - name: Commits
-      run: |
-        git config --global user.email "sdw10195@gmail.com"
-        git config --global user.name "seodaewon1"
-        
-        git add ceoban/ceoban_*.json
-        git add lotte/lotte_*.json
-        git add kfc/kfc_*.json
-        git add macdonald/macdonald_*.json
-        
-        git commit -m "차트 수집 완료" || echo "No changes to commit"
-        
-    - name: Push
+
+    - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         branch: "main"
