@@ -13,7 +13,7 @@ import json
 import pandas as pd
 
 # 현재 날짜 가져오기 
-current_date = datetime.now().strftime("%Y-%m-%d")
+current_date = datetime.now().strftime("%Y-%m-%d") 
 filename = f"kfc/kfc_{current_date}.json"
 
 # ChromeOptions 객체 생성
