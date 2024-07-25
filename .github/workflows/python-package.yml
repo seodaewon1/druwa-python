@@ -2,9 +2,9 @@ name: Python package
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '30 1 * * *'
 
@@ -18,10 +18,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -32,6 +34,7 @@ jobs:
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb
         sudo apt-get -f install
+        rm google-chrome-stable_current_amd64.deb
         
     - name: Run Python scripts
       run: |
@@ -41,8 +44,7 @@ jobs:
         python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
         
     - name: Pull changes
-      run: |
-        git pull origin main
+      run: git pull origin main
         
     - name: Commits
       run: |
@@ -56,8 +58,8 @@ jobs:
         
         git commit -m "차트 수집 완료" || echo "No changes to commit"
         
-    - name: Push
+    - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        branch: "main"
+        branch: main
         github_token: ${{ secrets.GITHUB_TOKEN }}
