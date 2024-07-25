@@ -33,6 +33,7 @@ jobs:
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb
         sudo apt-get -f install
+        rm google-chrome-stable_current_amd64.deb
         
     - name: Install ChromeDriver
       run: |
@@ -67,7 +68,7 @@ jobs:
         git add lotte/lotte_*.json || true
         git add kfc/kfc_*.json || true
         git add macdonald/macdonald_*.json || true
-        git add LICENSE.chromedriver ceoban.log google-chrome-stable_current_amd64.deb kfc.log lotte.log mac.log || true
+        git add LICENSE.chromedriver ceoban.log kfc.log lotte.log mac.log || true
         git commit -m "차트 수집 완료" || echo "No changes to commit"
 
     - name: Push changes
