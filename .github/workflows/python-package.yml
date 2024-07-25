@@ -39,33 +39,37 @@ jobs:
       run: |
         echo "Running ceoban.py..."
         python ceoban.py
+        echo "Checking ceoban JSON files..."
+        ls -l ceoban/ || echo "No ceoban directory found"
+        ls -l ceoban/ceoban_*.json || echo "No ceoban JSON files found"
       continue-on-error: true
 
     - name: Run kfc.py
       run: |
         echo "Running kfc.py..."
         python kfc.py
+        echo "Checking kfc JSON files..."
+        ls -l kfc/ || echo "No kfc directory found"
+        ls -l kfc/kfc_*.json || echo "No kfc JSON files found"
       continue-on-error: true
 
     - name: Run mac.py
       run: |
         echo "Running mac.py..."
         python mac.py
+        echo "Checking macdonald JSON files..."
+        ls -l macdonald/ || echo "No macdonald directory found"
+        ls -l macdonald/macdonald_*.json || echo "No macdonald JSON files found"
       continue-on-error: true
 
     - name: Run lotte.py
       run: |
         echo "Running lotte.py..."
         python lotte.py
-      continue-on-error: true
-
-    - name: Check for JSON files
-      run: |
-        echo "Checking for JSON files..."
-        ls -l ceoban/ceoban_*.json || echo "No ceoban JSON files found"
+        echo "Checking lotte JSON files..."
+        ls -l lotte/ || echo "No lotte directory found"
         ls -l lotte/lotte_*.json || echo "No lotte JSON files found"
-        ls -l kfc/kfc_*.json || echo "No kfc JSON files found"
-        ls -l macdonald/macdonald_*.json || echo "No macdonald JSON files found"
+      continue-on-error: true
 
     - name: Show contents of ceoban directory
       run: |
