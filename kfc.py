@@ -17,9 +17,6 @@ import os
 current_date = datetime.now().strftime("%Y-%m-%d") 
 filename = f"kfc/kfc_{current_date}.json"
 
-# 디렉토리가 존재하지 않으면 생성
-os.makedirs(os.path.dirname(filename), exist_ok=True)
-
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
 chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
