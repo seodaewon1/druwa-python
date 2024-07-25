@@ -42,6 +42,7 @@ jobs:
         echo "Checking ceoban JSON files..."
         ls -l ceoban/ || echo "No ceoban directory found"
         ls -l ceoban/ceoban_*.json || echo "No ceoban JSON files found"
+        if [ -f ceoban/ceoban_*.json ]; then cat ceoban/ceoban_*.json; fi
       continue-on-error: true
 
     - name: Run kfc.py
@@ -51,6 +52,7 @@ jobs:
         echo "Checking kfc JSON files..."
         ls -l kfc/ || echo "No kfc directory found"
         ls -l kfc/kfc_*.json || echo "No kfc JSON files found"
+        if [ -f kfc/kfc_*.json ]; then cat kfc/kfc_*.json; fi
       continue-on-error: true
 
     - name: Run mac.py
@@ -60,6 +62,7 @@ jobs:
         echo "Checking macdonald JSON files..."
         ls -l macdonald/ || echo "No macdonald directory found"
         ls -l macdonald/macdonald_*.json || echo "No macdonald JSON files found"
+        if [ -f macdonald/macdonald_*.json ]; then cat macdonald/macdonald_*.json; fi
       continue-on-error: true
 
     - name: Run lotte.py
@@ -69,27 +72,8 @@ jobs:
         echo "Checking lotte JSON files..."
         ls -l lotte/ || echo "No lotte directory found"
         ls -l lotte/lotte_*.json || echo "No lotte JSON files found"
+        if [ -f lotte/lotte_*.json ]; then cat lotte/lotte_*.json; fi
       continue-on-error: true
-
-    - name: Show contents of ceoban directory
-      run: |
-        echo "Contents of ceoban directory:"
-        ls -l ceoban/
-
-    - name: Show contents of lotte directory
-      run: |
-        echo "Contents of lotte directory:"
-        ls -l lotte/
-
-    - name: Show contents of kfc directory
-      run: |
-        echo "Contents of kfc directory:"
-        ls -l kfc/
-
-    - name: Show contents of macdonald directory
-      run: |
-        echo "Contents of macdonald directory:"
-        ls -l macdonald/
 
     - name: Commit changes
       run: |
