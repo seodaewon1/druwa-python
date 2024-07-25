@@ -11,10 +11,14 @@ from selenium.webdriver import ActionChains
 import time
 import json 
 import pandas as pd
- 
+import os
+
 # 현재 날짜 가져오기 
 current_date = datetime.now().strftime("%Y-%m-%d") 
 filename = f"kfc/kfc_{current_date}.json"
+
+# 디렉토리가 존재하지 않으면 생성
+os.makedirs(os.path.dirname(filename), exist_ok=True)
 
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
@@ -41,14 +45,15 @@ def search_iframe():
     try:
         driver.switch_to.default_content()
         WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
+        print("Switched to search iframe")
     except Exception as e:
         print(f"Error switching to iframe: {e}")
 
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
-        driver.switch_to.frame(driver.find_element(By.XPATH, '//*[@id="entryIframe"]'))
+        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH, '//*[@id="entryIframe"]')))
+        print("Switched to entry iframe")
     except Exception as e:
         print(f"Error switching to entry iframe: {e}")
 
@@ -56,9 +61,10 @@ def chk_names():
     search_iframe()
     elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
     name_list = [e.text for e in elem]
+    print(f"Found {len(name_list)} names")
     return elem, name_list
 
-def crawling_main():
+def crawling_main(elem, name_list):
     global naver_res
     addr_list = []
 
@@ -80,9 +86,11 @@ def crawling_main():
         'address': addr_list
     })
     naver_res = pd.concat([naver_res, naver_temp])
+    print("Crawling data added to dataframe")
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
+    print(f"Data saved to {filename}")
 
 page_num = 1
 
@@ -108,7 +116,7 @@ while True:
         else:
             last_name = name_list[-1]
 
-    crawling_main()
+    crawling_main(elem, name_list)
 
     # next page
     try:
