@@ -49,7 +49,7 @@ jobs:
       run: |
         echo "Running kfc.py..."
         python kfc.py
-        echo "Checking kfc JSON files..."
+        echo "Checking kfc JSON files..." 
         ls -l kfc/ || echo "No kfc directory found"
         ls -l kfc/kfc_*.json || echo "No kfc JSON files found"
         if [ -f kfc/kfc_*.json ]; then cat kfc/kfc_*.json; fi
