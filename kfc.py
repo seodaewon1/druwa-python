@@ -12,8 +12,8 @@ import time
 import json
 import pandas as pd
 
-# 현재 날짜 가져오기 
-current_date = datetime.now().strftime("%Y-%m-%d") 
+# 현재 날짜 가져오기
+current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
 
 # ChromeOptions 객체 생성
@@ -36,30 +36,36 @@ action = ActionChains(driver)
 
 naver_res = pd.DataFrame(columns=['title', 'address'])
 last_name = ''
-page_num = 1
 
 def search_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
+        WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
     except Exception as e:
-        print(f"Error switching to iframe: {e}")
+        print(f"Error switching to search iframe: {e}")
 
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
-        driver.switch_to.frame(driver.find_element(By.XPATH, '//*[@id="entryIframe"]'))
+        WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "entryIframe")))
     except Exception as e:
         print(f"Error switching to entry iframe: {e}")
 
-def chk_names():
-    search_iframe()
-    elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
-    name_list = [e.text for e in elem]
-    return elem, name_list
+def scroll_to_bottom():
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(3)  # 페이지가 로드될 시간을 줍니다.
 
-def crawling_main(elem, name_list):
+def chk_names():
+    scroll_to_bottom()
+    search_iframe()
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.place_bluelink')))
+    elems = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
+    print(f"Found {len(elems)} elements")
+    name_list = [e.text for e in elems]
+    print(f"Name list: {name_list}")
+    return elems, name_list
+
+def crawling_main():
     global naver_res
     addr_list = []
 
@@ -70,22 +76,22 @@ def crawling_main(elem, name_list):
 
         # append data
         try:
-            addr = soup.select('span.LDgIH')[0].text
+            addr_list.append(soup.select('span.LDgIH')[0].text)
         except IndexError:
-            addr = float('nan')
-        
-        addr_list.append(addr)
-        driver.switch_to.default_content()
+            addr_list.append(float('nan'))
+
         search_iframe()
 
     naver_temp = pd.DataFrame({
         'title': name_list,
         'address': addr_list
     })
-    naver_res = pd.concat([naver_res, naver_temp], ignore_index=True)
+    naver_res = pd.concat([naver_res, naver_temp])
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
+
+page_num = 1
 
 while True:
     time.sleep(1.5)
@@ -109,16 +115,16 @@ while True:
         else:
             last_name = name_list[-1]
 
-    crawling_main(elem, name_list)
+    crawling_main()
 
     # 다음 페이지로 이동
     try:
-        next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
+        next_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
             next_button.click()
             print(f"{page_num} 페이지 완료")
             page_num += 1
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
         else:
             print("마지막 페이지에 도달했습니다.")
             break
