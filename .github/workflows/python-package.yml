@@ -35,10 +35,10 @@ jobs:
         
     - name: Run Python scripts
       run: |
-        python3 ceoban.py > ceoban.log || { echo "ceoban.py failed"; exit 1; }
+        # python3 ceoban.py > ceoban.log || { echo "ceoban.py failed"; exit 1; }
         python3 kfc.py > kfc.log || { echo "kfc.py failed"; exit 1; }
-        python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
-        python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
+        # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
+        # python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
         
     - name: Pull changes
       run: |
@@ -49,10 +49,10 @@ jobs:
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
         
-        git add ceoban/ceoban_*.json
-        git add lotte/lotte_*.json
+        # git add ceoban/ceoban_*.json
+        # git add lotte/lotte_*.json
         git add kfc/kfc_*.json
-        git add macdonald/macdonald_*.json
+        # git add macdonald/macdonald_*.json
         
         git commit -m "차트 수집 완료" || echo "No changes to commit"
         
