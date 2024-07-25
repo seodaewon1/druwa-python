@@ -26,7 +26,7 @@ browser.get('https://coffeebanhada.com/main/store/find.php?page_now=0&page_row=1
 WebDriverWait(browser, 10).until(
     EC.presence_of_element_located((By.CLASS_NAME, "box2"))
 )
-
+ 
 # 업데이트된 페이지 소스를 변수에 저장
 html_source_updated = browser.page_source
 soup = BeautifulSoup(html_source_updated, 'html.parser')
