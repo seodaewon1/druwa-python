@@ -45,7 +45,7 @@ jobs:
     - name: Run Python scripts
       run: |
         python3 ceoban.py > ceoban.log || { echo "ceoban.py failed"; exit 1; }
-        python3 kfc.py > kfc.log || { echo "kfc.py failed"; exit 1; }
+        # python3 kfc.py > kfc.log || { echo "kfc.py failed"; exit 1; }
         python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
         # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
 
@@ -65,7 +65,7 @@ jobs:
       run: |
         git add ceoban/ceoban_*.json || true
         git add lotte/lotte_*.json || true
-        git add kfc/kfc_*.json || true
+        # git add kfc/kfc_*.json || true
         # git add macdonald/macdonald_*.json || true
         git add LICENSE.chromedriver ceoban.log google-chrome-stable_current_amd64.deb kfc.log lotte.log mac.log || true
         git commit -m "차트 수집 완료" || echo "No changes to commit"
