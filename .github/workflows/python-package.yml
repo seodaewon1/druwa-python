@@ -42,6 +42,16 @@ jobs:
         python3 kfc.py > kfc.log || { echo "kfc.py failed"; exit 1; }
         python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
         python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
+
+    - name: Upload logs
+      uses: actions/upload-artifact@v3
+      with:
+        name: log-files
+        path: |
+          ceoban.log
+          kfc.log
+          mac.log
+          lotte.log
         
     - name: Pull changes
       run: git pull origin main
