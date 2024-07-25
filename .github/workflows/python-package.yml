@@ -23,38 +23,45 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-        
+
+    - name: Verify Python version
+      run: python --version
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
 
+    - name: Verify installed packages
+      run: pip list
+
     - name: Run ceoban.py
       run: |
         echo "Running ceoban.py..."
-        python3 ceoban.py > ceoban.log 2>&1 || { echo "ceoban.py failed"; cat ceoban.log; exit 1; }
+        python ceoban.py || { echo "ceoban.py failed"; exit 1; }
 
     - name: Run kfc.py
       run: |
         echo "Running kfc.py..."
-        python3 kfc.py > kfc.log 2>&1 || { echo "kfc.py failed"; cat kfc.log; exit 1; }
+        python kfc.py || { echo "kfc.py failed"; exit 1; }
 
     - name: Run mac.py
       run: |
         echo "Running mac.py..."
-        python3 mac.py > mac.log 2>&1 || { echo "mac.py failed"; cat mac.log; exit 1; }
+        python mac.py || { echo "mac.py failed"; exit 1; }
 
     - name: Run lotte.py
       run: |
         echo "Running lotte.py..."
-        python3 lotte.py > lotte.log 2>&1 || { echo "lotte.py failed"; cat lotte.log; exit 1; }
+        python lotte.py || { echo "lotte.py failed"; exit 1; }
 
     - name: Check for JSON files
       run: |
-        ls -l ceoban/ceoban_*.json
-        ls -l lotte/lotte_*.json
-        ls -l kfc/kfc_*.json
-        ls -l macdonald/macdonald_*.json
+        echo "Checking for JSON files..."
+        ls -l ceoban/ceoban_*.json || echo "No ceoban JSON files found"
+        ls -l lotte/lotte_*.json || echo "No lotte JSON files found"
+        ls -l kfc/kfc_*.json || echo "No kfc JSON files found"
+        ls -l macdonald/macdonald_*.json || echo "No macdonald JSON files found"
 
     - name: Commits
       run: |
