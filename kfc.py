@@ -11,10 +11,14 @@ from selenium.webdriver import ActionChains
 import time
 import json 
 import pandas as pd
+import os
  
 # 현재 날짜 가져오기 
 current_date = datetime.now().strftime("%Y-%m-%d") 
 filename = f"kfc/kfc_{current_date}.json"
+
+# 디렉토리가 존재하지 않으면 생성
+os.makedirs(os.path.dirname(filename), exist_ok=True)
 
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
@@ -56,6 +60,7 @@ def chk_names():
     search_iframe()
     elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
     name_list = [e.text for e in elem]
+    print(f"Found {len(name_list)} names: {name_list}")  # 디버깅 출력
     return elem, name_list
 
 def crawling_main():
@@ -83,6 +88,7 @@ def crawling_main():
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
+    print(f"Data saved to {filename}")  # 디버깅 출력
 
 page_num = 1
 
