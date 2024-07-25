@@ -10,7 +10,7 @@ from datetime import datetime
 from selenium.webdriver import ActionChains
 import time
 import pandas as pd
-
+ 
 # 현재 날짜 가져오기
 current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"lotte/lotte_{current_date}.json"
