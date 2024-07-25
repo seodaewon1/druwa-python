@@ -11,7 +11,7 @@ from selenium.webdriver import ActionChains
 import time
 import json 
 import pandas as pd
-
+ 
 # 현재 날짜 가져오기 
 current_date = datetime.now().strftime("%Y-%m-%d") 
 filename = f"kfc/kfc_{current_date}.json"
