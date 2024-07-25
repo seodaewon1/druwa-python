@@ -36,6 +36,7 @@ action = ActionChains(driver)
 
 naver_res = pd.DataFrame(columns=['title', 'address'])
 last_name = ''
+page_num = 1
 
 def search_iframe():
     try:
@@ -58,7 +59,7 @@ def chk_names():
     name_list = [e.text for e in elem]
     return elem, name_list
 
-def crawling_main():
+def crawling_main(elem, name_list):
     global naver_res
     addr_list = []
 
@@ -69,22 +70,22 @@ def crawling_main():
 
         # append data
         try:
-            addr_list.append(soup.select('span.LDgIH')[0].text)
+            addr = soup.select('span.LDgIH')[0].text
         except IndexError:
-            addr_list.append(float('nan'))
-
+            addr = float('nan')
+        
+        addr_list.append(addr)
+        driver.switch_to.default_content()
         search_iframe()
 
     naver_temp = pd.DataFrame({
-       'title': name_list,
+        'title': name_list,
         'address': addr_list
     })
-    naver_res = pd.concat([naver_res, naver_temp])
+    naver_res = pd.concat([naver_res, naver_temp], ignore_index=True)
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
-
-page_num = 1
 
 while True:
     time.sleep(1.5)
@@ -108,9 +109,9 @@ while True:
         else:
             last_name = name_list[-1]
 
-    crawling_main()
+    crawling_main(elem, name_list)
 
-    # next page
+    # 다음 페이지로 이동
     try:
         next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
