@@ -28,34 +28,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
-        
-    - name: Install Google Chrome
-      run: |
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt-get -f install
-        rm google-chrome-stable_current_amd64.deb
-        
+      
     - name: Run Python scripts
       run: |
         python3 ceoban.py
         python3 kfc.py
         python3 mac.py
-        python3 lotte.py
+        python3 lotte.py    
 
-    - name: Upload logs
-      uses: actions/upload-artifact@v3
-      with:
-        name: log-files
-        path: |
-          ceoban.log
-          kfc.log
-          mac.log
-          lotte.log
-        
-    - name: Pull changes
-      run: git pull origin main
-        
     - name: Commits
       run: |
         git config --global user.email "sdw10195@gmail.com"
