@@ -30,7 +30,7 @@ service = ChromeService(executable_path=ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 keyword = 'KFC DT점'
-url = f'https://map.naver.com/p/search/{keyword}'
+url = f'https://map.naver.com/v5/search/{keyword}'
 driver.get(url)
 action = ActionChains(driver)
 
@@ -40,15 +40,14 @@ last_name = ''
 def search_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
+        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#searchIframe")))
     except Exception as e:
         print(f"Error switching to iframe: {e}")
 
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
-        driver.switch_to.frame(driver.find_element(By.XPATH, '//*[@id="entryIframe"]'))
+        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#entryIframe")))
     except Exception as e:
         print(f"Error switching to entry iframe: {e}")
 
@@ -112,12 +111,12 @@ while True:
 
     # next page
     try:
-        next_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
+        next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
             next_button.click()
             print(f"{page_num} 페이지 완료")
             page_num += 1
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
         else:
             print("마지막 페이지에 도달했습니다.")
             break
