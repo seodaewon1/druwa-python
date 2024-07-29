@@ -28,17 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
         
-    - name: Install Chrome and ChromeDriver
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt-get -f install
-        wget https://chromedriver.storage.googleapis.com/127.0.6533.72/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/
-        
+
     - name: Run Python scripts
       run: |
         # python3 ceoban.py
