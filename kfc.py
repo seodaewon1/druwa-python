@@ -31,6 +31,7 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 
 keyword = 'KFC DT점'
 url = f'https://map.naver.com/v5/search/{keyword}'
+print(f"Accessing URL: {url}")
 driver.get(url)
 action = ActionChains(driver)
 
@@ -41,6 +42,7 @@ def search_iframe():
     try:
         driver.switch_to.default_content()
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#searchIframe")))
+        print("Switched to search iframe")
     except Exception as e:
         print(f"Error switching to search iframe: {e}")
 
@@ -48,6 +50,7 @@ def entry_iframe():
     try:
         driver.switch_to.default_content()
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#entryIframe")))
+        print("Switched to entry iframe")
     except Exception as e:
         print(f"Error switching to entry iframe: {e}")
 
@@ -57,6 +60,7 @@ def chk_names():
         WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
+        print(f"Names found: {name_list}")
         return elem, name_list
     except Exception as e:
         print(f"Error checking names: {e}")
@@ -90,6 +94,7 @@ def crawling_main(elem, name_list):
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
+    print(f"Data saved to {filename}")
 
 page_num = 1
 
