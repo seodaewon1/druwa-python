@@ -34,7 +34,7 @@ jobs:
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb
         sudo apt-get -f install
-        
+
     - name: Run Python scripts
       run: |
          python3 ceoban.py || { echo "ceoban.py failed"; exit 1; }
@@ -42,12 +42,17 @@ jobs:
          python3 mac.py || { echo "mac.py failed"; exit 1; }
          python3 lotte.py || { echo "lotte.py failed"; exit 1; }
         
-    - name: Check for changes
+    - name: Check for generated files
+      run: |
+        echo "Checking for generated files..."
+        ls -R kfc/ lotte/ macdonald/
+        git status
+
+    - name: Add and commit changes
       run: |
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
-        git add kfc/kfc_*.json
-        git status
+        git add kfc/*.json lotte/*.json macdonald/*.json || echo "No files to add"
         if ! git diff-index --quiet HEAD; then
           git commit -m "차트 수집 완료"
         else
