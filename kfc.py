@@ -22,7 +22,10 @@ chrome_options.add_argument("--disable-dev-shm-usage")  # 공유 메모리 사�
 chrome_options.add_argument("--disable-gpu")  # GPU 사용 안 함
 
 # ChromeDriver 경로 설정
-driver = webdriver.Chrome()
+service = ChromeService(executable_path=ChromeDriverManager().install())
+
+# WebDriver 객체 생성
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
 keyword = 'KFC DT점'
 url = f'https://map.naver.com/p/search/{keyword}'
