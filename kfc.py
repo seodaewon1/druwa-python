@@ -58,7 +58,7 @@ def chk_names():
     name_list = [e.text for e in elem]
     return elem, name_list
 
-def crawling_main():
+def crawling_main(elem, name_list):
     global naver_res
     addr_list = []
 
@@ -108,7 +108,7 @@ while True:
         else:
             last_name = name_list[-1]
 
-    crawling_main()
+    crawling_main(elem, name_list)
 
     # next page
     try:
