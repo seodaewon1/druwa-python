@@ -12,6 +12,10 @@ import time
 import json
 import pandas as pd
 
+# Define the versions of Chrome and ChromeDriver
+chrome_version = "127.0.6533.72"  # replace with the version you want to use
+chrome_driver_version = "127.0.6533.72"  # replace with the matching ChromeDriver version
+
 # 현재 날짜 가져오기 
 current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
