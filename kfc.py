@@ -7,10 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from datetime import datetime
-from selenium.webdriver import ActionChains
 import time
 import json
-import pandas as pd
 
 # 현재 날짜 가져오기
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -25,9 +23,7 @@ chrome_options.add_argument("--disable-gpu")  # GPU 사용 안 함
 
 # ChromeDriver 경로 설정
 service = ChromeService(executable_path=ChromeDriverManager().install())
-
-# WebDriver 객체 생성
-driver = webdriver.Chrome(service=service, options=chrome_options)
+browser = webdriver.Chrome(service=service, options=options)
 
 keyword = 'KFC DT점'
 url = f'https://map.naver.com/p/search/{keyword}'
