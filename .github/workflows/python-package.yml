@@ -1,3 +1,6 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
 name: Python package
 
 on:
@@ -7,9 +10,9 @@ on:
     branches: [ "main" ]
   schedule:
     - cron: '30 1 * * *'
-
 jobs:
   build:
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,58 +22,42 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
-
+        pip install requests
+        pip install beautifulsoup4
+        pip install lxml
+        pip install pandas
+        pip install selenium
+        pip install webdriver_manager
+        
     - name: Install Google Chrome
       run: |
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb
         sudo apt-get -f install
         
-    - name: Install ChromeDriver
-      run: |
-        LATEST_DRIVER_VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-        wget https://chromedriver.storage.googleapis.com/${LATEST_DRIVER_VERSION}/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/chromedriver
-        sudo chmod +x /usr/local/bin/chromedriver
-
     - name: Run Python scripts
       run: |
-        python3 ceoban.py > ceoban.log || { echo "ceoban.py failed"; exit 1; }
-        # python3 kfc.py > kfc.log || { echo "kfc.py failed"; exit 1; }
-        python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
-        # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
-
-    - name: Check directory contents
-      run: |
-        echo "Listing contents of the working directory:"
-        ls -la
-        echo "Listing contents of the 'kfc' directory:"
-        ls -la kfc
-
-    - name: Configure Git
-      run: |
+         python3 ceoban.py || { echo "ceoban.py failed"; exit 1; }
+         python3 kfc.py || { echo "kfc.py failed"; exit 1; }
+         python3 mac.py || { echo "mac.py failed"; exit 1; }
+         python3 lotte.py || { echo "lotte.py failed"; exit 1; }
+        
+    - name: Commits
+      run : |
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
-
-    - name: Add files and commit changes
-      run: |
-        git add ceoban/ceoban_*.json || true
-        git add lotte/lotte_*.json || true
-        # git add kfc/kfc_*.json || true
-        # git add macdonald/macdonald_*.json || true
-        git add LICENSE.chromedriver ceoban.log google-chrome-stable_current_amd64.deb kfc.log lotte.log mac.log || true
-        git commit -m "차트 수집 완료" || echo "No changes to commit"
-
-    - name: Push changes
+        git add ceoban/ceoban_*.json
+        git add lotte/lotte_*.json
+        git add macdonald/macdonald_*.json
+        
+        git commit -m "차트 수집 완료"
+    - name: Push
       uses: ad-m/github-push-action@master
       with:
         branch: "main"
