@@ -14,9 +14,6 @@ import json
 current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"ceoban/ceoban_{current_date}.json"
 
-# 디렉토리가 존재하지 않으면 생성
-os.makedirs(os.path.dirname(filename), exist_ok=True)
-
 # 웹드라이버 설정
 options = ChromeOptions()
 options.add_argument("--headless")  # 화면 출력 없이 실행
