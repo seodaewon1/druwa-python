@@ -36,8 +36,10 @@ jobs:
       run: |
          python3 ceoban.py || { echo "ceoban.py failed"; exit 1; }
          python3 kfc.py || { echo "kfc.py failed"; exit 1; }
-         # python3 mac.py || { echo "mac.py failed"; exit 1; }
-         # python3 lotte.py || { echo "lotte.py failed"; exit 1; }
+         ls -la ceoban/
+         ls -la kfc/
+         # ls -la lotte/
+         # ls -la macdonald/
         
     - name: Commit and Push
       env:
@@ -50,5 +52,6 @@ jobs:
         # git add lotte/lotte_*.json
         # git add macdonald/macdonald_*.json
         
+        git status
         git commit -m "차트 수집 완료" || echo "No changes to commit"
         git push origin main
