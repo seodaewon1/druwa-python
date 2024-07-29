@@ -2,9 +2,9 @@ name: Python package
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '30 1 * * *'
 
@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -30,34 +30,25 @@ jobs:
     - name: Install Google Chrome
       run: |
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt-get -f install
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install
         
     - name: Run Python scripts
       run: |
-        python3 ceoban.py > ceoban.log || { echo "ceoban.py failed"; exit 1; }
-        python3 kfc.py > kfc.log || { echo "kfc.py failed"; exit 1; }
-        python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
-        python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
+         python3 ceoban.py || { echo "ceoban.py failed"; exit 1; }
+         python3 kfc.py || { echo "kfc.py failed"; exit 1; }
+         # python3 mac.py || { echo "mac.py failed"; exit 1; }
+         # python3 lotte.py || { echo "lotte.py failed"; exit 1; }
         
-    - name: Pull changes
-      run: |
-        git pull origin main
-        
-    - name: Commits
+    - name: Commit and Push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
-        
         git add ceoban/ceoban_*.json
-        git add lotte/lotte_*.json
         git add kfc/kfc_*.json
-        git add macdonald/macdonald_*.json
+        # git add lotte/lotte_*.json
+        # git add macdonald/macdonald_*.json
         
-        git commit -m "차트 수집 완료" || echo "No changes to commit"
-        
-    - name: Push
-      uses: ad-m/github-push-action@master
-      with:
-        branch: "main"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        git commit -m "차트 수집 완료"
+        git push origin main
