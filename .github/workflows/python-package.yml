@@ -50,5 +50,5 @@ jobs:
         # git add lotte/lotte_*.json
         # git add macdonald/macdonald_*.json
         
-        git commit -m "차트 수집 완료"
+        git commit -m "차트 수집 완료" || echo "No changes to commit"
         git push origin main
