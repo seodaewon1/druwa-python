@@ -53,6 +53,7 @@ jobs:
         git config --global user.email "sdw10195@gmail.com"
         git config --global user.name "seodaewon1"
         git add ceoban/ceoban_*.json
+        git add kfc/kfc_*.json
         git add lotte/lotte_*.json
         git add macdonald/macdonald_*.json
         
