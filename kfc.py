@@ -1,17 +1,3 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-from datetime import datetime
-from selenium.webdriver import ActionChains
-import time
-import json
-import pandas as pd
-
 # 현재 날짜 가져오기 
 current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
@@ -37,6 +23,11 @@ action = ActionChains(driver)
 
 naver_res = pd.DataFrame(columns=['title', 'address'])
 last_name = ''
+
+# Save page source to file for analysis
+with open('page_source.html', 'w', encoding='utf-8') as f:
+    f.write(driver.page_source)
+print("Page source saved to page_source.html")
 
 def search_iframe():
     try:
