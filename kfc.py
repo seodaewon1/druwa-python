@@ -42,7 +42,7 @@ def search_iframe():
         driver.switch_to.default_content()
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#searchIframe")))
     except Exception as e:
-        print(f"Error switching to iframe: {e}")
+        print(f"Error switching to search iframe: {e}")
 
 def entry_iframe():
     try:
@@ -52,27 +52,35 @@ def entry_iframe():
         print(f"Error switching to entry iframe: {e}")
 
 def chk_names():
-    search_iframe()
-    elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
-    name_list = [e.text for e in elem]
-    return elem, name_list
+    try:
+        search_iframe()
+        WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
+        elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
+        name_list = [e.text for e in elem]
+        return elem, name_list
+    except Exception as e:
+        print(f"Error checking names: {e}")
+        return [], []
 
 def crawling_main(elem, name_list):
     global naver_res
     addr_list = []
 
     for e in elem:
-        e.click()
-        entry_iframe()
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-        # append data
         try:
-            addr_list.append(soup.select('span.LDgIH')[0].text)
-        except IndexError:
-            addr_list.append(float('nan'))
+            e.click()
+            entry_iframe()
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        search_iframe()
+            # append data
+            try:
+                addr_list.append(soup.select('span.LDgIH')[0].text)
+            except IndexError:
+                addr_list.append(float('nan'))
+
+            search_iframe()
+        except Exception as e:
+            print(f"Error during main crawling: {e}")
 
     naver_temp = pd.DataFrame({
        'title': name_list,
@@ -87,7 +95,6 @@ page_num = 1
 
 while True:
     time.sleep(1.5)
-    search_iframe()
     elem, name_list = chk_names()
 
     if not name_list:
@@ -98,14 +105,18 @@ while True:
         break
 
     while True:
-        action.move_to_element(elem[-1]).perform()
-        time.sleep(3)
-        elem, name_list = chk_names()
+        try:
+            action.move_to_element(elem[-1]).perform()
+            time.sleep(3)
+            elem, name_list = chk_names()
 
-        if not name_list or last_name == name_list[-1]:
+            if not name_list or last_name == name_list[-1]:
+                break
+            else:
+                last_name = name_list[-1]
+        except Exception as e:
+            print(f"Error during scrolling: {e}")
             break
-        else:
-            last_name = name_list[-1]
 
     crawling_main(elem, name_list)
 
