@@ -12,9 +12,9 @@ import time
 import json
 import pandas as pd
 
-# 현재 날짜 가져오기 
-current_date = datetime.now().strftime("%Y-%m-%d") 
-filename = f"kfc/kfc_{current_date}.json" 
+# 현재 날짜 가져오기
+current_date = datetime.now().strftime("%Y-%m-%d")
+filename = f"kfc/kfc_{current_date}.json"
 
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
@@ -67,11 +67,10 @@ def crawling_main():
         entry_iframe()
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        # append data
         try:
             addr_list.append(soup.select('span.LDgIH')[0].text)
         except IndexError:
-            addr_list.append(float('nan'))
+            addr_list.append('No address found')
 
         search_iframe()
 
@@ -79,10 +78,16 @@ def crawling_main():
        'title': name_list,
         'address': addr_list
     })
-    naver_res = pd.concat([naver_res, naver_temp])
+    naver_res = pd.concat([naver_res, naver_temp], ignore_index=True)
+
+    # 디버깅: 임시 데이터 출력
+    print(naver_temp)
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
+    # 디버깅: 저장된 파일 내용 출력
+    with open(filename, 'r', encoding='utf-8') as f:
+        print(f.read())
 
 page_num = 1
 
@@ -110,7 +115,7 @@ while True:
 
     crawling_main()
 
-    # next page
+    # 다음 페이지로 이동
     try:
         next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
