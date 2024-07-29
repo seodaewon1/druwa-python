@@ -45,8 +45,8 @@ jobs:
       run: |
          python3 ceoban.py || { echo "ceoban.py failed"; exit 1; }
          python3 kfc.py || { echo "kfc.py failed"; exit 1; }
-         python3 mac.py || { echo "mac.py failed"; exit 1; }
-         python3 lotte.py || { echo "lotte.py failed"; exit 1; }
+         # python3 mac.py || { echo "mac.py failed"; exit 1; }
+         # python3 lotte.py || { echo "lotte.py failed"; exit 1; }
         
     - name: Commits
       run : |
@@ -54,8 +54,8 @@ jobs:
         git config --global user.name "seodaewon1"
         git add ceoban/ceoban_*.json
         git add kfc/kfc_*.json
-        git add lotte/lotte_*.json
-        git add macdonald/macdonald_*.json
+        # git add lotte/lotte_*.json
+        # git add macdonald/macdonald_*.json
         
         git commit -m "차트 수집 완료"
     - name: Push
