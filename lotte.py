@@ -22,6 +22,10 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--headless")  # headless 모드로 실행
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
+chrome_options.add_argument("--window-size=1920x1080")  # 큰 해상도 설정
+chrome_options.add_argument("--ignore-certificate-errors")  # 인증서 오류 무시
+chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화
 driver = webdriver.Chrome(options=chrome_options)
 
 keyword = '롯데리아 DT점'
