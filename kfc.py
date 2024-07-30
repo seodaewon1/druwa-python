@@ -18,11 +18,12 @@ filename = f"kfc/kfc_{current_date}.json"
 
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
-# chrome_options.add_argument("--headless")  # 주석 처리하여 UI 모드에서 실행해 보기
+chrome_options.add_argument("--headless")  # 헤드리스 모드에서 실행
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+chrome_options.add_argument("--remote-debugging-port=9222")  # 디버깅 포트 설정
 
 # ChromeDriver 경로 설정
 service = ChromeService(executable_path=ChromeDriverManager().install())
@@ -74,7 +75,6 @@ def chk_names():
         return elem, name_list
     except Exception as e:
         print(f"Error checking names: {e}")
-        # 추가적인 디버깅 정보 출력
         print(f"Page source at error: {driver.page_source}")
         return [], []
 
