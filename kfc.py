@@ -111,7 +111,7 @@ def save_to_json():
 page_num = 1
 
 while True:
-    time.sleep(4)
+    time.sleep(10)
     elem, name_list = chk_names()
 
     if not name_list:
