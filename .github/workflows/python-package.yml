@@ -43,7 +43,7 @@ jobs:
     - name: Run Python scripts
       run: |
         python3 ceoban.py
-        python3 lotte.py
+        python3 lotte.py > lotte.log || { echo "mac.py failed"; exit 1; }
         # python3 kfc.py
         # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
 
