@@ -50,7 +50,7 @@ print("Page source saved to page_source.html")
 def search_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#searchIframe")))
+        WebDriverWait(driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#searchIframe")))
         print("Switched to search iframe")
     except Exception as e:
         print(f"Error switching to search iframe: {e}")
@@ -58,7 +58,7 @@ def search_iframe():
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#entryIframe")))
+        WebDriverWait(driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe#entryIframe")))
         print("Switched to entry iframe")
     except Exception as e:
         print(f"Error switching to entry iframe: {e}")
@@ -108,7 +108,7 @@ def save_to_json():
 page_num = 1
 
 while True:
-    time.sleep(3)
+    time.sleep(4)
     elem, name_list = chk_names()
 
     if not name_list:
@@ -136,12 +136,12 @@ while True:
 
     # next page
     try:
-        next_button = WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
+        next_button = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
             next_button.click()
             print(f"{page_num} 페이지 완료")
             page_num += 1
-            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
+            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
         else:
             print("마지막 페이지에 도달했습니다.")
             break
