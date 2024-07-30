@@ -42,7 +42,7 @@ last_name = ''
 def search_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
+        WebDriverWait(driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
         print("Switched to search iframe")
     except Exception as e:
         print(f"Error switching to search iframe: {e}")
@@ -50,7 +50,7 @@ def search_iframe():
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="entryIframe"]')))
         driver.switch_to.frame(driver.find_element(By.XPATH, '//*[@id="entryIframe"]'))
         print("Switched to entry iframe")
     except Exception as e:
@@ -59,7 +59,7 @@ def entry_iframe():
 def chk_names():
     try:
         search_iframe()
-        WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
+        WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
         print(f"Names found: {name_list}")
@@ -76,7 +76,7 @@ def crawling_main(elem, name_list):
     for e in elem:
         try:
             e.click()
-            time.sleep(10)  # 페이지 로드 시간을 기다림
+            time.sleep(20)  # 페이지 로드 시간을 기다림
             entry_iframe()
             soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -116,7 +116,7 @@ while True:
     while True:
         try:
             action.move_to_element(elem[-1]).perform()
-            time.sleep(2)  # 이동 후 잠시 대기
+            time.sleep(20)  # 이동 후 잠시 대기
             elem, name_list = chk_names()
 
             if not name_list or last_name == name_list[-1]:
