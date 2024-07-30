@@ -63,13 +63,16 @@ def entry_iframe():
 def chk_names():
     try:
         search_iframe()
-        WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
+        print("Searching for elements...")
+        WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
         print(f"Names found: {name_list}")
         return elem, name_list
     except Exception as e:
         print(f"Error checking names: {e}")
+        # 추가적인 디버깅 정보 출력
+        print(f"Page source at error: {driver.page_source}")
         return [], []
 
 def crawling_main(elem, name_list):
