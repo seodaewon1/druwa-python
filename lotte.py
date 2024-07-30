@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from datetime import datetime
-import json
+import logging
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # 현재 날짜 가져오기
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -32,18 +36,18 @@ def search_iframe():
     try:
         driver.switch_to.default_content()
         WebDriverWait(driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
-        print("Switched to search iframe")
+        logger.info("Switched to search iframe")
     except Exception as e:
-        print(f"Error switching to search iframe: {e}")
+        logger.error(f"Error switching to search iframe: {e}")
 
 def entry_iframe():
     try:
         driver.switch_to.default_content()
         WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.ID, "entryIframe")))
         driver.switch_to.frame(driver.find_element(By.ID, "entryIframe"))
-        print("Switched to entry iframe")
+        logger.info("Switched to entry iframe")
     except Exception as e:
-        print(f"Error switching to entry iframe: {e}")
+        logger.error(f"Error switching to entry iframe: {e}")
 
 def chk_names():
     try:
@@ -51,10 +55,10 @@ def chk_names():
         WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
-        print(f"Names found: {name_list}")
+        logger.info(f"Names found: {name_list}")
         return elem, name_list
     except Exception as e:
-        print(f"Error checking names: {e}")
+        logger.error(f"Error checking names: {e}")
         return [], []
 
 def crawling_main(elem, name_list):
@@ -76,7 +80,7 @@ def crawling_main(elem, name_list):
 
             search_iframe()
         except Exception as ex:
-            print(f"Error during main crawling: {ex}")
+            logger.error(f"Error during main crawling: {ex}")
 
     naver_temp = pd.DataFrame({
        'title': name_list,
@@ -86,7 +90,7 @@ def crawling_main(elem, name_list):
 
 def save_to_json():
     naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
-    print(f"Data saved to {filename}")
+    logger.info(f"Data saved to {filename}")
 
 page_num = 1
 
@@ -95,7 +99,7 @@ while True:
     elem, name_list = chk_names()
     
     if not name_list:
-        print("이름 리스트가 비어 있습니다.")
+        logger.info("이름 리스트가 비어 있습니다.")
         break
     
     if last_name == name_list[-1]:
@@ -113,24 +117,24 @@ while True:
             else:
                 last_name = name_list[-1]
         except Exception as e:
-            print(f"Error during scrolling: {e}")
+            logger.error(f"Error during scrolling: {e}")
             break
 
     crawling_main(elem, name_list)
 
     # next page
     try:
-        next_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
+        next_button = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
         if next_button:
             next_button.click()
-            print(f"{page_num} 페이지 완료")
+            logger.info(f"{page_num} 페이지 완료")
             page_num += 1
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
+            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
         else:
-            print("마지막 페이지에 도달했습니다.")
+            logger.info("마지막 페이지에 도달했습니다.")
             break
     except Exception as e:
-        print(f"Error finding or clicking the next button: {e}")
+        logger.error(f"Error finding or clicking the next button: {e}")
         break
 
 # JSON 파일로 저장
