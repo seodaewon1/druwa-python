@@ -1,148 +1,68 @@
-import pandas as pd
-from selenium import webdriver
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.by import By
-import time
-from bs4 import BeautifulSoup
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from datetime import datetime
-import logging
+name: Python package
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: '30 1 * * *'
 
-# 현재 날짜 가져오기
-current_date = datetime.now().strftime("%Y-%m-%d")
-filename = f"lotte_{current_date}.json"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
 
-# run webdriver
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--headless")  # headless 모드로 실행
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
-chrome_options.add_argument("--window-size=1920x1080")  # 큰 해상도 설정
-chrome_options.add_argument("--ignore-certificate-errors")  # 인증서 오류 무시
-chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화
-driver = webdriver.Chrome(options=chrome_options)
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-keyword = '롯데리아 DT점'
-url = f'https://map.naver.com/p/search/{keyword}'
-driver.get(url)
-action = ActionChains(driver)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
 
-naver_res = pd.DataFrame(columns=['title', 'address'])
-last_name = ''
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y chromium-chromedriver
+          if [ -e /usr/bin/chromedriver ]; then sudo rm /usr/bin/chromedriver; fi
+          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+        shell: bash
 
-def search_iframe():
-    try:
-        driver.switch_to.default_content()
-        WebDriverWait(driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
-        logger.info("Switched to search iframe")
-    except Exception as e:
-        logger.error(f"Error switching to search iframe: {e}")
+      - name: Run Python scripts
+        run: |
+          python3 ceoban.py
+          python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
+          # python3 kfc.py
+          # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
+        env:
+          PATH: /usr/lib/chromium-browser:$PATH
+          LD_LIBRARY_PATH: /usr/lib/chromium-browser:$LD_LIBRARY_PATH
 
-def entry_iframe():
-    try:
-        driver.switch_to.default_content()
-        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.ID, "entryIframe")))
-        driver.switch_to.frame(driver.find_element(By.ID, "entryIframe"))
-        logger.info("Switched to entry iframe")
-    except Exception as e:
-        logger.error(f"Error switching to entry iframe: {e}")
+      - name: Pull changes
+        run: |
+          git pull origin main
 
-def chk_names():
-    try:
-        search_iframe()
-        WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
-        elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
-        name_list = [e.text for e in elem]
-        logger.info(f"Names found: {name_list}")
-        return elem, name_list
-    except Exception as e:
-        logger.error(f"Error checking names: {e}")
-        return [], []
+      - name: Commits
+        run: |
+          git config --global user.email "sdw10195@gmail.com"
+          git config --global user.name "seodaewon1"
+          git add ceoban/ceoban_*.json
+          git add lotte/lotte_*.json
+          # git add kfc/kfc_*.json
+          # git add macdonald/macdonald_*.json
+          git commit -m "차트 수집 완료" || echo "No changes to commit"
 
-def crawling_main(elem, name_list):
-    global naver_res
-    addr_list = []
-
-    for e in elem:
-        try:
-            e.click()
-            time.sleep(20)  # 페이지 로드 시간을 기다림
-            entry_iframe()
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-            # append data
-            try:
-                addr_list.append(soup.select('span.LDgIH')[0].text)
-            except IndexError:
-                addr_list.append(float('nan'))
-
-            search_iframe()
-        except Exception as ex:
-            logger.error(f"Error during main crawling: {ex}")
-
-    naver_temp = pd.DataFrame({
-       'title': name_list,
-        'address': addr_list
-    })
-    naver_res = pd.concat([naver_res, naver_temp], ignore_index=True)
-
-def save_to_json():
-    naver_res.to_json(filename, orient='records', force_ascii=False, indent=4)
-    logger.info(f"Data saved to {filename}")
-
-page_num = 1
-
-while True:
-    time.sleep(20)
-    elem, name_list = chk_names()
-    
-    if not name_list:
-        logger.info("이름 리스트가 비어 있습니다.")
-        break
-    
-    if last_name == name_list[-1]:
-        break
-
-    while True:
-        # auto scroll
-        try:
-            action.move_to_element(elem[-1]).perform()
-            time.sleep(2)  # 페이지 로드 시간을 조금 더 기다림
-            elem, name_list = chk_names()
-
-            if not name_list or last_name == name_list[-1]:
-                break
-            else:
-                last_name = name_list[-1]
-        except Exception as e:
-            logger.error(f"Error during scrolling: {e}")
-            break
-
-    crawling_main(elem, name_list)
-
-    # next page
-    try:
-        next_button = WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.XPATH, '//a[@class="eUTV2" and .//span[@class="place_blind" and text()="다음페이지"]]')))
-        if next_button:
-            next_button.click()
-            logger.info(f"{page_num} 페이지 완료")
-            page_num += 1
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CLASS_NAME, 'place_bluelink')))
-        else:
-            logger.info("마지막 페이지에 도달했습니다.")
-            break
-    except Exception as e:
-        logger.error(f"Error finding or clicking the next button: {e}")
-        break
-
-# JSON 파일로 저장
-save_to_json()
-
-# 브라우저 종료
-driver.quit()
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
