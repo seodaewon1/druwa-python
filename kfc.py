@@ -6,15 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-from datetime import datetime  # datetime 모듈 임포트 추가
+from datetime import datetime
 from selenium.webdriver import ActionChains
 import time
 import json
 import pandas as pd
-
-# Define the versions of Chrome and ChromeDriver
-chrome_version = "127.0.6533.72"  # replace with the version you want to use
-chrome_driver_version = "127.0.6533.72"  # replace with the matching ChromeDriver version
 
 # 현재 날짜 가져오기 
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -26,6 +22,7 @@ chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
 chrome_options.add_argument("--no-sandbox")  # 샌드박스 사용 안 함
 chrome_options.add_argument("--disable-dev-shm-usage")  # 공유 메모리 사용 안 함
 chrome_options.add_argument("--disable-gpu")  # GPU 사용 안 함
+chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
 # ChromeDriver 경로 설정
 service = ChromeService(executable_path=ChromeDriverManager().install())
