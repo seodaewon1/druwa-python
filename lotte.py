@@ -64,7 +64,7 @@ def crawling_main(elem, name_list):
     for e in elem:
         try:
             e.click()
-            time.sleep(5)  # 페이지 로드 시간을 기다림
+            time.sleep(20)  # 페이지 로드 시간을 기다림
             entry_iframe()
             soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -91,7 +91,7 @@ def save_to_json():
 page_num = 1
 
 while True:
-    time.sleep(1.5)
+    time.sleep(20)
     elem, name_list = chk_names()
     
     if not name_list:
