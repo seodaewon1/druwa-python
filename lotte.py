@@ -31,7 +31,7 @@ last_name = ''
 def search_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
+        WebDriverWait(driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "searchIframe")))
         print("Switched to search iframe")
     except Exception as e:
         print(f"Error switching to search iframe: {e}")
@@ -39,7 +39,7 @@ def search_iframe():
 def entry_iframe():
     try:
         driver.switch_to.default_content()
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "entryIframe")))
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.ID, "entryIframe")))
         driver.switch_to.frame(driver.find_element(By.ID, "entryIframe"))
         print("Switched to entry iframe")
     except Exception as e:
@@ -48,7 +48,7 @@ def entry_iframe():
 def chk_names():
     try:
         search_iframe()
-        WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
+        WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
         print(f"Names found: {name_list}")
