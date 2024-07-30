@@ -118,7 +118,7 @@ while True:
     while True:
         try:
             action.move_to_element(elem[-1]).perform()
-            time.sleep(3)
+            time.sleep(3)  # 페이지 로드 시간을 조금 더 기다림
             elem, name_list = chk_names()
 
             if not name_list or last_name == name_list[-1]:
