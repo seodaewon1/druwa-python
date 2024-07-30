@@ -18,7 +18,7 @@ filename = f"kfc/kfc_{current_date}.json"
 
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
-chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
+# chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
 chrome_options.add_argument("--no-sandbox")  # 샌드박스 사용 안 함
 chrome_options.add_argument("--disable-dev-shm-usage")  # 공유 메모리 사용 안 함
 chrome_options.add_argument("--disable-gpu")  # GPU 사용 안 함
@@ -64,6 +64,7 @@ def chk_names():
     try:
         search_iframe()
         print("Searching for elements...")
+        time.sleep(10)  # 요청 사이에 충분한 시간 대기
         WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
