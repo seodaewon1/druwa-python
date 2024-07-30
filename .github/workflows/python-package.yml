@@ -2,9 +2,9 @@ name: Python package
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '30 1 * * *'
 
@@ -17,54 +17,52 @@ jobs:
         python-version: ["3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml pandas selenium webdriver_manager
 
-    - name: Install Chrome and ChromeDriver
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-        sudo apt-get install -y chromium-chromedriver
-        if [ -e /usr/bin/chromedriver ]; then sudo rm /usr/bin/chromedriver; fi
-        sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y chromium-chromedriver
+          if [ -e /usr/bin/chromedriver ]; then sudo rm /usr/bin/chromedriver; fi
+          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+        shell: bash
 
-      env:
-        pythonLocation: ${{ matrix.python-version }}
-        LD_LIBRARY_PATH: ${{ matrix.python-version }}/lib
+      - name: Run Python scripts
+        run: |
+          python3 ceoban.py
+          python3 lotte.py > lotte.log || { echo "lotte.py failed"; exit 1; }
+          # python3 kfc.py
+          # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
+        env:
+          PATH: /usr/lib/chromium-browser:$PATH
+          LD_LIBRARY_PATH: /usr/lib/chromium-browser:$LD_LIBRARY_PATH
 
-    - name: Run Python scripts
-      run: |
-        python3 ceoban.py
-        python3 lotte.py > lotte.log || { echo "mac.py failed"; exit 1; }
-        # python3 kfc.py
-        # python3 mac.py > mac.log || { echo "mac.py failed"; exit 1; }
+      - name: Pull changes
+        run: |
+          git pull origin main
 
-    - name: Pull changes
-      run: |
-        git pull origin main
+      - name: Commits
+        run: |
+          git config --global user.email "sdw10195@gmail.com"
+          git config --global user.name "seodaewon1"
+          git add ceoban/ceoban_*.json
+          git add lotte/lotte_*.json
+          # git add kfc/kfc_*.json
+          # git add macdonald/macdonald_*.json
+          git commit -m "차트 수집 완료" || echo "No changes to commit"
 
-    - name: Commits
-      run: |
-        git config --global user.email "sdw10195@gmail.com"
-        git config --global user.name "seodaewon1"
-
-        git add ceoban/ceoban_*.json
-        git add lotte/lotte_*.json
-        # git add kfc/kfc_*.json
-        # git add macdonald/macdonald_*.json
-
-        git commit -m "차트 수집 완료" || echo "No changes to commit"
-
-    - name: Push
-      uses: ad-m/github-push-action@master
-      with:
-        branch: "main"
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
