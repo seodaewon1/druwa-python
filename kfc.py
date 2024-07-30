@@ -12,23 +12,27 @@ import time
 import json
 import pandas as pd
 
-# 현재 날짜 가져오기 
+# 현재 날짜 가져오기
 current_date = datetime.now().strftime("%Y-%m-%d")
 filename = f"kfc/kfc_{current_date}.json"
 
 # ChromeOptions 객체 생성
 chrome_options = ChromeOptions()
-# chrome_options.add_argument("--headless")  # 헤드리스 모드 사용
-chrome_options.add_argument("--no-sandbox")  # 샌드박스 사용 안 함
-chrome_options.add_argument("--disable-dev-shm-usage")  # 공유 메모리 사용 안 함
-chrome_options.add_argument("--disable-gpu")  # GPU 사용 안 함
+# chrome_options.add_argument("--headless")  # 주석 처리하여 UI 모드에서 실행해 보기
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
 # ChromeDriver 경로 설정
 service = ChromeService(executable_path=ChromeDriverManager().install())
 
 # WebDriver 객체 생성
-driver = webdriver.Chrome(service=service, options=chrome_options)
+try:
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+except Exception as e:
+    print(f"Error initializing WebDriver: {e}")
+    exit(1)
 
 keyword = 'KFC DT점'
 url = f'https://map.naver.com/v5/search/{keyword}'
@@ -63,9 +67,7 @@ def entry_iframe():
 def chk_names():
     try:
         search_iframe()
-        print("Searching for elements...")
-        time.sleep(10)  # 요청 사이에 충분한 시간 대기
-        WebDriverWait(driver, 60).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
+        WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.place_bluelink')))
         elem = driver.find_elements(By.CSS_SELECTOR, '.place_bluelink')
         name_list = [e.text for e in elem]
         print(f"Names found: {name_list}")
@@ -122,7 +124,7 @@ while True:
     while True:
         try:
             action.move_to_element(elem[-1]).perform()
-            time.sleep(3)  # 페이지 로드 시간을 조금 더 기다림
+            time.sleep(3)
             elem, name_list = chk_names()
 
             if not name_list or last_name == name_list[-1]:
